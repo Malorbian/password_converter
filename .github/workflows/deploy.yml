@@ -15,6 +15,13 @@ jobs:
         with:
           fetch-depth: 0  
 
+      - name: Fetch gh-pages branch
+        run: |
+          git fetch origin gh-pages
+          git checkout -b gh-pages origin/gh-pages
+          mkdir -p ../gh-pages-temp
+          cp -r * ../gh-pages-temp/
+
       - name: Setup gh-pages directory
         run: |
           mkdir -p gh-pages/js
