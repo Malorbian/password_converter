@@ -102,15 +102,15 @@ function isValidInput(password, salt, length, alphabet) {
   }
 
   if (!Number.isInteger(length) || length < MIN_PASSWORD_LENGTH || length > MAX_PASSWORD_LENGTH) {
-    throw new RangeError(`length must be an integer between ${MIN_PASSWORD_LENGTH} and ${MAX_PASSWORD_LENGTH}`);
+    throw new RangeError(`Length must be an integer between ${MIN_PASSWORD_LENGTH} and ${MAX_PASSWORD_LENGTH}`);
   }
 
   if (password.length < MIN_PASSWORD_LENGTH) {
-    throw new RangeError(`password must be at least ${MIN_PASSWORD_LENGTH} characters long`);
+    throw new RangeError(`Password must be at least ${MIN_PASSWORD_LENGTH} characters long`);
   }
 
   if (salt.length < MIN_SALT_LENGTH || salt.length > MAX_SALT_LENGTH) {
-    throw new RangeError(`salt must be between ${MIN_SALT_LENGTH} and ${MAX_SALT_LENGTH} characters long`);
+    throw new RangeError(`Salt must be between ${MIN_SALT_LENGTH} and ${MAX_SALT_LENGTH} characters long`);
   }
 
   if (!Object.values(Alphabets).includes(alphabet)) {
@@ -118,11 +118,11 @@ function isValidInput(password, salt, length, alphabet) {
   }
 
   if (!isInAlphabet(password, alphabet)) {
-    throw new RangeError('password contains invalid characters');
+    throw new RangeError('Password contains invalid characters');
   }
 
   if (!isInAlphabet(salt, alphabet)) {
-    throw new RangeError('salt contains invalid characters');
+    throw new RangeError('Salt contains invalid characters');
   }
 
   return true;
