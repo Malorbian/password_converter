@@ -17,9 +17,14 @@ jobs:
 
       - name: Fetch gh-pages branch
         run: |
+          mkdir gh-pages-temp
+
           git fetch origin gh-pages
-          git checkout origin/gh-pages -- page/
-          cp -r page/ /gh-pages-temp/
+          git checkout origin/gh-pages -- page
+          cp -r page/* gh-pages-temp/
+
+          mkdir -p gh-pages-temp/js
+          cp src/converter.js gh-pages-temp/js/
 
       - name: Setup gh-pages directory
         run: |
