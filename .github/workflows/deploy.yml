@@ -19,15 +19,15 @@ jobs:
         run: |
           git fetch origin gh-pages
           git checkout origin/gh-pages -- page/
-          cp -r page/ ../gh-pages-temp/
+          cp -r page/ /gh-pages-temp/
 
       - name: Setup gh-pages directory
         run: |
-          cp src/converter.js ../gh-pages-temp/js/
+          cp src/converter.js /gh-pages-temp/js/
 
       - name: Commit & push to gh-pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ../gh-pages-temp
+          publish_dir: /gh-pages-temp
           publish_branch: gh-pages
