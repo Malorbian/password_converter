@@ -21,7 +21,7 @@ jobs:
 
           git fetch origin gh-pages
           git checkout origin/gh-pages -- page
-          cp -r page/* gh-pages-temp/
+          cp -r page/* gh-pages-temp/page/
 
           mkdir -p gh-pages-temp/js
           cp src/converter.js gh-pages-temp/js/
