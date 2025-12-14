@@ -1,3 +1,4 @@
+#! /usr/bin/env node
 'use strict';
 
 const { convertPassword, Alphabets } = require('./converter');
