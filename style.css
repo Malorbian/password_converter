@@ -1,0 +1,231 @@
+:root{
+  --bg: #001026; /* midnight blue */
+  --card: rgba(255,255,255,0.03);
+  --accent: #4fc3f7;
+  --text: #e6f7ff;
+  --muted: rgba(230,247,255,0.6);
+}
+
+html,body{height:100%;}
+body{
+  margin:0;
+  /* moved the radial light center to the left outside the viewport (vertically centered)
+     and increased its size / falloff by adjusting color stop percentages */
+  background: radial-gradient(circle at -25% 50%, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.03) 40%, transparent 120%), var(--bg);
+  color:var(--text);
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.center{
+  width:100%;
+  max-width:540px;
+  padding:48px 24px;
+  box-sizing:border-box;
+}
+
+h1#title{
+  margin:0 0 24px 0;
+  text-align:center;
+  font-size:32px;
+  letter-spacing:0.5px;
+}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:12px;
+  box-shadow: 0 6px 24px rgba(0,0,0,0.6);
+  /* Use CSS Grid so fields align consistently and fill available width */
+  display:grid;
+  grid-template-columns: 1fr;
+  gap:14px;
+}
+
+/* Rows remain flex for generated actions, but two-up uses grid for equal columns */
+.row{
+  display:flex;
+  gap:12px;
+  /* align to top so labels remain above their inputs */
+  align-items:flex-start;
+}
+
+.row.two-up{
+  display:grid;
+  grid-template-columns: 1fr 1fr;
+  gap:12px;
+}
+
+.row.two-up > .field{
+  width:100%;
+}
+
+.field{
+  display:flex;
+  flex-direction:column;
+  width:100%; /* ensure each field fills its grid cell */
+}
+
+.field.stretch{
+  flex:1 1 auto;
+  width:100%;
+}
+
+/* Ensure inputs and selects fill their container */
+input[type="text"], input[type="password"], input[type="number"], select{
+  width:100%;
+  box-sizing: border-box;
+}
+
+/* Keep generated row layout: input stretches, actions aligned right */
+.row.generated{
+  display:flex;
+  gap:12px;
+  /* align to bottom so buttons line up with the input field (not the label) */
+  align-items:flex-end;
+}
+
+.row.generated .actions{
+  display:flex;
+  gap:8px;
+  align-items:center;
+}
+
+/* Ensure the generated input and its buttons share a consistent height */
+.row.generated input#generated-output{
+  height:40px;
+}
+.row.generated .actions button{
+  height:40px;
+}
+
+/* Make the Generate button slightly more prominent and align right edge */
+.row.generated .actions button.primary{
+  padding:8px 18px;
+}
+
+/* Responsive: stack columns on small screens */
+@media (max-width:540px){
+  .row{flex-direction:column; align-items:stretch}
+  .row.generated .actions{justify-content:flex-end}
+}
+
+.label{
+  font-size:13px;
+  color:var(--muted);
+  margin-bottom:6px;
+}
+
+/* Inputs and selects use a subtle solid background so the page radial light does not show through */
+input[type="text"], input[type="password"], input[type="number"], select{
+  background: rgba(0,10,24,0.18); /* slightly darker than page background */
+  border:1px solid rgba(255,255,255,0.08);
+  color:var(--text);
+  padding:10px 12px;
+  border-radius:8px;
+  outline:none;
+  -webkit-appearance: none; /* remove default arrow styling so we can control focus ring */
+  appearance: none;
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  box-sizing: border-box; /* ensure padding is included in height */
+  height:40px; /* make these match the generated field height */
+}
+
+/* Provide a subtle custom arrow using an SVG data URI so appearance:none still shows an arrow */
+select{
+  padding-right:36px; /* room for custom arrow */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%23e6f7ff' d='M6 8L0 0h12z'/%3E%3C/svg%3E");
+  border-radius:8px;
+  outline: none;
+}
+
+/* Remove default browser expand arrow on IE/Edge while keeping our custom arrow */
+select::-ms-expand { display: none; }
+
+/* On hover/focus keep rounded corners and use the same turquoise border/halo as other fields */
+select:hover, select:focus{
+  background-color: rgba(0,10,24,0.22);
+  border-color: rgba(79,195,247,0.6);
+  box-shadow: 0 0 0 4px rgba(79,195,247,0.06);
+  border-radius:8px;
+}
+
+/* Remove the ugly rectangular focus outline and keep rounded corners */
+input:focus, select:focus{
+  border-color: rgba(79,195,247,0.6);
+  box-shadow: 0 0 0 4px rgba(79,195,247,0.06);
+  border-radius:8px;
+}
+
+/* Style native option backgrounds where supported */
+select option{
+  background: rgba(0,6,18,0.95); /* near-opaque so page light won't affect it */
+  color: var(--text);
+  padding:6px 8px;
+}
+
+/* remove native spinner on number inputs */
+input[type="number"]{
+  -moz-appearance: textfield;
+  -webkit-appearance: none;
+  appearance: textfield;
+}
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button{
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+button{
+  background:transparent;
+  border:1px solid rgba(255,255,255,0.08);
+  color:var(--text);
+  padding:8px 12px;
+  border-radius:8px;
+  cursor:pointer;
+}
+
+button.primary{
+  background:linear-gradient(90deg, rgba(79,195,247,0.12), rgba(79,195,247,0.06));
+  border-color: rgba(79,195,247,0.18);
+}
+
+#alphabet-tooltip{
+  margin-top:6px;
+  background: rgba(255,255,255,0.03);
+  padding:10px;
+  border-radius:8px;
+  font-family: monospace;
+  font-size:12px;
+  display:none;
+  white-space:pre-wrap;
+}
+
+.input-with-icon{position:relative;}
+.input-with-icon input{padding-right:40px;}
+.inline-toggle{
+  position:absolute;
+  right:8px;
+  top:50%;
+  transform:translateY(-50%);
+  background:transparent;
+  border:none;
+  color:var(--muted);
+  padding:6px;
+  border-radius:6px;
+  cursor:pointer;
+}
+.inline-toggle:focus{outline: none; box-shadow: 0 0 0 4px rgba(79,195,247,0.06);}
+
+/* Make sure the generated and field inputs use webkit password dots */
+input[type="password"]{font-family: 'text-security-disc', 'Arial', sans-serif;}
+
+@media (max-width:420px){
+  .center{padding:24px 16px}
+  h1#title{font-size:24px}
+}
