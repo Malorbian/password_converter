@@ -7,137 +7,136 @@ const saltToggle = document.getElementById('salt-toggle');
 const lengthInput = document.getElementById('length-input');
 const alphabetSelect = document.getElementById('alphabet-select');
 const tooltip = document.getElementById('alphabet-tooltip');
+const alphabetInfo = document.getElementById('alphabet-info');
 const output = document.getElementById('generated-output');
 const outputToggle = document.getElementById('output-toggle');
 const generateBtn = document.getElementById('generate');
 
-let revealTimeouts = new Map();
-let revealSpans = new Map();
-// offscreen canvas for text measurement
-const _textMeasureCanvas = document.createElement('canvas');
-const _textMeasureCtx = _textMeasureCanvas.getContext('2d');
+let maskTimeout;
+const passwordState = { value: '' };
+const saltState = { value: '' };
 
 
-function showAlphabetTooltip(key) {
-  const alpha = Alphabets[key] || Alphabets.specialSimple;
-  tooltip.textContent = alpha;
+// ----- Alphabet tooltip handling -----
+
+function buildAlphabetInfoHtml(){
+  const list = [
+    {key:'base', name:'Base'},
+    {key:'specialSimple', name:'Special Characters Simple'},
+    {key:'specialAdvanced', name:'Special Characters Advanced'}
+  ];
+  return list.map(it => `<div class="alphabet-item"><b>${it.name}</b><div class="alphabet-chars">${(Alphabets[it.key]||'').replace(/ /g,'·')}</div></div>`).join('');
+}
+
+function openAlphabetInfo(){
+  tooltip.innerHTML = buildAlphabetInfoHtml();
   tooltip.style.display = 'block';
-  tooltip.setAttribute('aria-hidden', 'false');
+  tooltip.setAttribute('aria-hidden','false');
+  alphabetInfo.setAttribute('aria-expanded','true');
 }
 
-function hideAlphabetTooltip() {
+function closeAlphabetInfo(){
   tooltip.style.display = 'none';
-  tooltip.setAttribute('aria-hidden', 'true');
+  tooltip.setAttribute('aria-hidden','true');
+  alphabetInfo.setAttribute('aria-expanded','false');
+}
+// open/close info on button click
+alphabetInfo.addEventListener('click', (e)=>{
+  e.stopPropagation();
+  const expanded = alphabetInfo.getAttribute('aria-expanded') === 'true';
+  if (expanded) closeAlphabetInfo(); else openAlphabetInfo();
+});
+// close info when clicking outside
+document.addEventListener('click', (e)=>{
+  const wrapper = alphabetSelect.closest('.select-with-info');
+  if (!wrapper) return;
+  if (!wrapper.contains(e.target)) closeAlphabetInfo();
+});
+
+
+// ----- Input/Output mask toggle -----
+
+toggleTextMaskListener(passwordInput, passwordState, passwordToggle);
+toggleTextMaskListener(saltInput, saltState, saltToggle);
+
+function toggleTextMaskListener(inputField, storedValue, toggleBtn) {
+  toggleBtn.addEventListener('click', () => {
+    const visible = toggleBtn.getAttribute('aria-pressed') === 'true';
+
+    if (visible) {
+      inputField.value = createMaskedString(storedValue.value.length);
+      toggleBtn.setAttribute('aria-pressed', 'false');
+      inputField.title = 'Show';
+    } else {
+      inputField.value = storedValue.value;
+      toggleBtn.setAttribute('aria-pressed', 'true');
+      inputField.title = 'Hide';
+    }
+  });
 }
 
-alphabetSelect.addEventListener('mouseover', () => {
-  const key = alphabetSelect.value || 'specialSimple';
-  showAlphabetTooltip(key);
-});
+togglePasswordVisibilityListener(outputToggle, output);
 
-alphabetSelect.addEventListener('mousemove', () => {
-  const key = alphabetSelect.value || 'specialSimple';
-  showAlphabetTooltip(key);
-});
-
-alphabetSelect.addEventListener('mouseleave', hideAlphabetTooltip);
-
-alphabetSelect.addEventListener('change', () => {
-  showAlphabetTooltip(alphabetSelect.value);
-});
-
-// Brief reveal: show only the last typed character for 700ms using an overlay span
-function briefReveal(input) {
-  // don't reveal if user explicitly toggled visibility on
-  if (input.dataset.userVisible === 'true') return;
-
-  // Clear previous timeout if any
-  if (revealTimeouts.has(input)) {
-    clearTimeout(revealTimeouts.get(input));
-  }
-
-  const val = input.value || '';
-  if (val.length === 0) return;
-  const last = val.slice(-1);
-
-  // wrapper is .input-with-icon or parent
-  const wrapper = input.closest('.input-with-icon') || input.parentElement;
-
-  let span = revealSpans.get(input);
-  if (!span) {
-    span = document.createElement('span');
-    span.className = 'char-reveal';
-    span.setAttribute('aria-hidden', 'true');
-    wrapper.appendChild(span);
-    revealSpans.set(input, span);
-  }
-
-  span.textContent = last;
-  span.style.opacity = '1';
-
-  // position at the caret: measure text width up to the caret and account for padding/scroll
-  const pos = typeof input.selectionStart === 'number' ? input.selectionStart : val.length;
-  const before = val.slice(0, pos);
-  const cs = getComputedStyle(input);
-  // prefer computed font if available
-  const fontSpec = cs.font || `${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`;
-  _textMeasureCtx.font = fontSpec;
-  const textWidth = _textMeasureCtx.measureText(before).width;
-  const paddingLeft = parseFloat(cs.paddingLeft || '0');
-  const scrollLeft = input.scrollLeft || 0;
-  const left = Math.max(6, paddingLeft + textWidth - scrollLeft);
-  span.style.left = left + 'px';
-  span.style.removeProperty('right');
-
-  // clear after timeout
-  const t = setTimeout(() => {
-    span.style.opacity = '0';
-    // remove after transition
-    setTimeout(() => {
-      if (span && span.parentElement) span.parentElement.removeChild(span);
-      revealSpans.delete(input);
-    }, 150);
-    revealTimeouts.delete(input);
-  }, 700);
-  revealTimeouts.set(input, t);
+function togglePasswordVisibilityListener(toggleBtn, outputField) {
+  toggleBtn.addEventListener('click', () => {
+    if (toggleBtn.getAttribute('aria-pressed') === 'false') {
+      outputField.type = 'text';
+      toggleBtn.setAttribute('aria-pressed', 'true');
+      toggleBtn.title = 'Hide';
+    } else {
+      outputField.type = 'password';
+      toggleBtn.setAttribute('aria-pressed', 'false');
+      toggleBtn.title = 'Show';
+    }
+  });
 }
 
-passwordInput.addEventListener('input', () => briefReveal(passwordInput));
-saltInput.addEventListener('input', () => briefReveal(saltInput));
 
-// Toggle buttons for password and salt
-passwordToggle.addEventListener('click', () => {
-  if (passwordInput.type === 'password') {
-    passwordInput.type = 'text';
-    passwordInput.dataset.userVisible = 'true';
-    passwordToggle.setAttribute('aria-pressed', 'true');
-  } else {
-    passwordInput.type = 'password';
-    passwordInput.dataset.userVisible = 'false';
-    passwordToggle.setAttribute('aria-pressed', 'false');
-  }
-});
+// ----- Mask delay for masked input fields -----
 
-saltToggle.addEventListener('click', () => {
-  if (saltInput.type === 'password') {
-    saltInput.type = 'text';
-    saltInput.dataset.userVisible = 'true';
-    saltToggle.setAttribute('aria-pressed', 'true');
-  } else {
-    saltInput.type = 'password';
-    saltInput.dataset.userVisible = 'false';
-    saltToggle.setAttribute('aria-pressed', 'false');
-  }
+passwordMaskDelayListener(passwordInput, passwordState);
+passwordMaskDelayListener(saltInput, saltState);
+
+/**
+ * Makes a text field behave like a password field with delayed masking. Actual input values are stored separately.
+ * @param {HTMLInputElement} inputField - input element 
+ * @param {Object} storedValue - external object with correct stored value of input 
+ * @param {number} duration - duration until masking in ms
+ */
+function passwordMaskDelayListener(inputField, storedValue, duration = 500) {
+  inputField.addEventListener('input', () => {
+    const newChar = inputField.value.slice(-1);
+    storedValue.value += newChar;
+
+    inputField.value = createMaskedString(storedValue.value.length - 1) + newChar;
+
+    if (maskTimeout) clearTimeout(maskTimeout);
+
+    maskTimeout = setTimeout(() => {
+      inputField.value = createMaskedString(storedValue.value.length);
+    }, duration);
+  });
+
+  // Correct stored value for backspaces and mask immediately on keydown
+  inputField.addEventListener('keydown', (e) => {
+    if (e.key === 'Backspace') {
+      storedValue.value = storedValue.value.slice(0, -1);
+    } else {
+      clearTimeout(maskTimeout);
+      inputField.value = createMaskedString(storedValue.value.length);
+    }
 });
+}
+
+
+// ----- Generate output handling -----
 
 generateBtn.addEventListener('click', async () => {
   try {
-    const pwd = passwordInput.value;
-    const salt = saltInput.value;
     const len = parseInt(lengthInput.value, 10);
     const alphabetKey = alphabetSelect.value;
     const alphabet = Alphabets[alphabetKey] || Alphabets.specialSimple;
-    const result = await convertPassword(pwd, salt, len, alphabet);
+    const result = await convertPassword(passwordState.value, saltState.value, len, alphabet);
     output.value = result;
   } catch (err) {
     output.value = '';
@@ -145,18 +144,10 @@ generateBtn.addEventListener('click', async () => {
   }
 });
 
-outputToggle.addEventListener('click', () => {
-  if (output.type === 'password') {
-    output.type = 'text';
-    outputToggle.setAttribute('aria-pressed', 'true');
-    outputToggle.title = 'Hide generated';
-  } else {
-    output.type = 'password';
-    outputToggle.setAttribute('aria-pressed', 'false');
-    outputToggle.title = 'Show generated';
-  }
-});
 
-// show tooltip when hovering the selected option in the opened select (best-effort)
-alphabetSelect.addEventListener('focus', () => showAlphabetTooltip(alphabetSelect.value));
-alphabetSelect.addEventListener('blur', hideAlphabetTooltip);
+// ----- Helper -----
+
+// Creates a chain of dots as masked string of given length.
+function createMaskedString(iterations) {
+  return '•'.repeat(iterations);
+}
