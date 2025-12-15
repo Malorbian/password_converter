@@ -70,6 +70,9 @@ h1#title{
   width:100%; /* ensure each field fills its grid cell */
 }
 
+/* Make fields positioning context for absolute children like tooltips */
+.field{position:relative}
+
 .field.stretch{
   flex:1 1 auto;
   width:100%;
@@ -196,7 +199,10 @@ button.primary{
 }
 
 #alphabet-tooltip{
-  margin-top:6px;
+  position:absolute;
+  left:0;
+  top: calc(100% + 6px);
+  z-index:20;
   background: rgba(255,255,255,0.03);
   padding:10px;
   border-radius:8px;
@@ -204,6 +210,9 @@ button.primary{
   font-size:12px;
   display:none;
   white-space:pre-wrap;
+  min-width: 100%;
+  box-sizing: border-box;
+  pointer-events: none;
 }
 
 .input-with-icon{position:relative;}
