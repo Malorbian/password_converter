@@ -60,6 +60,18 @@ h1#title{
   gap:12px;
 }
 
+.select-with-info{display:flex; align-items:center; gap:8px; position:relative}
+.select-with-info select{min-width:240px}
+.info-btn{
+  width:28px; height:28px; border-radius:50%;
+  border:1px solid rgba(255,255,255,0.08);
+  background: rgba(255,255,255,0.02);
+  color:var(--text);
+  display:inline-flex; align-items:center; justify-content:center;
+  font-weight:600; cursor:pointer;
+}
+.info-btn:focus{outline:none; box-shadow:0 0 0 4px rgba(79,195,247,0.06)}
+
 .row.two-up > .field{
   width:100%;
 }
@@ -202,18 +214,21 @@ button.primary{
   position:absolute;
   left:0;
   top: calc(100% + 6px);
-  z-index:20;
-  background: rgba(255,255,255,0.03);
+  z-index:40;
+  background: rgba(11, 8, 48, 0.6);
   padding:10px;
   border-radius:8px;
   font-family: monospace;
   font-size:12px;
   display:none;
   white-space:pre-wrap;
-  min-width: 100%;
+  min-width: 220px;
   box-sizing: border-box;
-  pointer-events: none;
+  pointer-events: auto;
 }
+
+.alphabet-item{margin-bottom:8px}
+.alphabet-item b{display:block; margin-bottom:4px}
 
 .input-with-icon{position:relative;}
 .input-with-icon input{padding-right:40px;}
@@ -230,25 +245,6 @@ button.primary{
   cursor:pointer;
 }
 .inline-toggle:focus{outline: none; box-shadow: 0 0 0 4px rgba(79,195,247,0.06);}
-
-/* Briefly show last-typed character in an overlay inside the input */
-.char-reveal{
-  position:absolute;
-  left:12px; /* will be adjusted dynamically by script */
-  top:50%;
-  transform:translateY(-50%) scale(0.98);
-  background: rgba(255,255,255,0.02);
-  padding:4px 6px;
-  border-radius:6px;
-  font-family: inherit;
-  color:var(--text);
-  opacity:0;
-  transition: opacity .14s ease, transform .14s ease;
-  pointer-events:none;
-  font-weight:600;
-  font-size:14px;
-  white-space:nowrap;
-}
 
 /* Make sure the generated and field inputs use webkit password dots */
 input[type="password"]{font-family: 'text-security-disc', 'Arial', sans-serif;}

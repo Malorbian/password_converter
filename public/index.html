@@ -14,7 +14,7 @@
       <label class="field">
         <span class="label">Password</span>
         <div class="input-with-icon">
-          <input id="password-input" type="password" autocomplete="new-password" minlength="8" required>
+          <input id="password-input" type="text" autocomplete="off" minlength="8" required>
           <button id="password-toggle" class="inline-toggle" type="button" aria-pressed="false" title="Show password">
             <!-- eye SVG -->
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M12 5C7 5 2.73 8.11 1 12c1.73 3.89 6 7 11 7s9.27-3.11 11-7c-1.73-3.89-6-7-11-7z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -25,7 +25,7 @@
       <label class="field">
         <span class="label">Salt</span>
         <div class="input-with-icon">
-          <input id="salt-input" type="password" autocomplete="off" minlength="8" required>
+          <input id="salt-input" type="text" autocomplete="off" minlength="8" required>
           <button id="salt-toggle" class="inline-toggle" type="button" aria-pressed="false" title="Show salt">
             <!-- eye SVG -->
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M12 5C7 5 2.73 8.11 1 12c1.73 3.89 6 7 11 7s9.27-3.11 11-7c-1.73-3.89-6-7-11-7z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -42,12 +42,15 @@
 
         <label class="field">
           <span class="label">Alphabet</span>
-          <select id="alphabet-select">
-            <option value="base">Base</option>
-            <option value="specialSimple" selected>Special Characters Simple</option>
-            <option value="specialAdvanced">Special Characters Advanced</option>
-          </select>
-          <div id="alphabet-tooltip" role="tooltip" aria-hidden="true"></div>
+          <div class="select-with-info">
+            <select id="alphabet-select">
+              <option value="base">Base</option>
+              <option value="specialSimple" selected>Special Characters Simple</option>
+              <option value="specialAdvanced">Special Characters Advanced</option>
+            </select>
+            <button id="alphabet-info" type="button" class="info-btn" aria-expanded="false" title="Show alphabets">i</button>
+            <div id="alphabet-tooltip" role="tooltip" aria-hidden="true"></div>
+          </div>
         </label>
       </div>
 
