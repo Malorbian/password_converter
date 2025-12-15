@@ -12,6 +12,10 @@ const outputToggle = document.getElementById('output-toggle');
 const generateBtn = document.getElementById('generate');
 
 let revealTimeouts = new Map();
+let revealSpans = new Map();
+// offscreen canvas for text measurement
+const _textMeasureCanvas = document.createElement('canvas');
+const _textMeasureCtx = _textMeasureCanvas.getContext('2d');
 
 
 function showAlphabetTooltip(key) {
@@ -42,19 +46,46 @@ alphabetSelect.addEventListener('change', () => {
   showAlphabetTooltip(alphabetSelect.value);
 });
 
-// Brief reveal: show last character typed for 700ms
+// Brief reveal: show only the last typed character for 700ms using an overlay span
 function briefReveal(input) {
+  // don't reveal if user explicitly toggled visibility on
+  if (input.dataset.userVisible === 'true') return;
+
   // Clear previous timeout if any
   if (revealTimeouts.has(input)) {
     clearTimeout(revealTimeouts.get(input));
   }
-  // If already type='text' (user toggled), do nothing
-  if (input.type === 'text') return;
 
-  // Switch to text to briefly reveal then switch back
-  input.type = 'text';
+  const val = input.value || '';
+  if (val.length === 0) return;
+  const last = val.slice(-1);
+
+  // wrapper is .input-with-icon or parent
+  const wrapper = input.closest('.input-with-icon') || input.parentElement;
+
+  let span = revealSpans.get(input);
+  if (!span) {
+    span = document.createElement('span');
+    span.className = 'char-reveal';
+    span.setAttribute('aria-hidden', 'true');
+    wrapper.appendChild(span);
+    revealSpans.set(input, span);
+  }
+
+  span.textContent = last;
+  span.style.opacity = '1';
+
+  // position near the right by default so it appears before the eye icon
+  span.style.right = '40px';
+
+  // clear after timeout
   const t = setTimeout(() => {
-    input.type = 'password';
+    span.style.opacity = '0';
+    // remove after transition
+    setTimeout(() => {
+      if (span && span.parentElement) span.parentElement.removeChild(span);
+      revealSpans.delete(input);
+    }, 150);
     revealTimeouts.delete(input);
   }, 700);
   revealTimeouts.set(input, t);
@@ -67,9 +98,11 @@ saltInput.addEventListener('input', () => briefReveal(saltInput));
 passwordToggle.addEventListener('click', () => {
   if (passwordInput.type === 'password') {
     passwordInput.type = 'text';
+    passwordInput.dataset.userVisible = 'true';
     passwordToggle.setAttribute('aria-pressed', 'true');
   } else {
     passwordInput.type = 'password';
+    passwordInput.dataset.userVisible = 'false';
     passwordToggle.setAttribute('aria-pressed', 'false');
   }
 });
@@ -77,9 +110,11 @@ passwordToggle.addEventListener('click', () => {
 saltToggle.addEventListener('click', () => {
   if (saltInput.type === 'password') {
     saltInput.type = 'text';
+    saltInput.dataset.userVisible = 'true';
     saltToggle.setAttribute('aria-pressed', 'true');
   } else {
     saltInput.type = 'password';
+    saltInput.dataset.userVisible = 'false';
     saltToggle.setAttribute('aria-pressed', 'false');
   }
 });

@@ -222,6 +222,24 @@ button.primary{
 }
 .inline-toggle:focus{outline: none; box-shadow: 0 0 0 4px rgba(79,195,247,0.06);}
 
+/* Briefly show last-typed character in an overlay inside the input */
+.char-reveal{
+  position:absolute;
+  right:40px; /* sits left of the eye icon */
+  top:50%;
+  transform:translateY(-50%) scale(0.98);
+  background: rgba(255,255,255,0.02);
+  padding:4px 6px;
+  border-radius:6px;
+  font-family: inherit;
+  color:var(--text);
+  opacity:0;
+  transition: opacity .14s ease, transform .14s ease;
+  pointer-events:none;
+  font-weight:600;
+  font-size:14px;
+}
+
 /* Make sure the generated and field inputs use webkit password dots */
 input[type="password"]{font-family: 'text-security-disc', 'Arial', sans-serif;}
 
