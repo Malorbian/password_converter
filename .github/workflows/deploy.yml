@@ -15,15 +15,14 @@ jobs:
         with:
           fetch-depth: 0  
 
-      - name: Fetch gh-pages branch
+      - name: Copy files to gh-pages temp directory
         run: |
-          mkdir -p gh-pages-temp/page
+          set -e
 
-          git fetch origin gh-pages
-          git checkout origin/gh-pages -- page
-          cp -r page/* gh-pages-temp/page/
+          mkdir -p gh-pages-temp
+          cp -r public/* gh-pages-temp/
 
-          mkdir -p gh-pages-temp/js
+          mkird -p gh-pages-temp/js
           cp src/converter.js gh-pages-temp/js/
 
       - name: Commit & push to gh-pages
