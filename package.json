@@ -2,14 +2,15 @@
   "name": "password_converter",
   "version": "1.0.0",
   "description": "Create secure, deterministic passwords locally in your browser.",
+  "keywords": [],
+  "author": "JPW",
+  "license": "MIT",
+  "type": "module",
   "main": "src/index.js",
   "bin": {
     "pwgen": "./src/cli.js"
   },
   "scripts": {
     "test": "node test/test_converter.js"
-  },
-  "keywords": [],
-  "author": "JPW",
-  "license": "MIT"
+  }
 }

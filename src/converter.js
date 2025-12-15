@@ -1,6 +1,7 @@
 'use strict';
 
-const { subtle } = require('crypto').webcrypto;
+const crypto = window.crypto;
+const subtle = crypto.subtle;
 
 const DEFAULT_ITERATIONS = 100_000;
 const ALPHABET_BASE = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
@@ -15,7 +16,7 @@ const MAX_SALT_LENGTH = 32;
 /**
  * @typedef {'base' | 'specialSimple' | 'specialAdvanced'} AlphabetType
  */
-const Alphabets = Object.freeze({
+export const Alphabets = Object.freeze({
   base: ALPHABET_BASE,
   specialSimple: ALPHABET_SPECIAL_SIMPLE,
   specialAdvanced: ALPHABET_SPECIAL_ADVANCED
@@ -31,7 +32,7 @@ const Alphabets = Object.freeze({
  * @param {AlphabetType} alphabet - which alphabet to map to (default: specialSimple)
  * @returns {string}
  */
-async function convertPassword(password, salt, length, alphabet = Alphabets.specialSimple) {
+export async function convertPassword(password, salt, length, alphabet = Alphabets.specialSimple) {
   
   length = Number(length) || 0;
   isValidInput(password, salt, length, Alphabets.specialAdvanced);
@@ -43,8 +44,6 @@ async function convertPassword(password, salt, length, alphabet = Alphabets.spec
   // Create a string from the derived bytes using the specified alphabet
   return mapBytesToAlphabet(bytes, length, alphabet);
 }
-
-module.exports = { convertPassword, Alphabets };
 
 
 // ----- Helper -----
