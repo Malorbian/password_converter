@@ -225,7 +225,7 @@ button.primary{
 /* Briefly show last-typed character in an overlay inside the input */
 .char-reveal{
   position:absolute;
-  right:40px; /* sits left of the eye icon */
+  left:12px; /* will be adjusted dynamically by script */
   top:50%;
   transform:translateY(-50%) scale(0.98);
   background: rgba(255,255,255,0.02);
@@ -238,6 +238,7 @@ button.primary{
   pointer-events:none;
   font-weight:600;
   font-size:14px;
+  white-space:nowrap;
 }
 
 /* Make sure the generated and field inputs use webkit password dots */
