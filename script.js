@@ -1,4 +1,4 @@
-import { convertPassword, Alphabets } from '/js/converter.js';
+import { convertPassword, Alphabets } from './js/converter.js';
 
 const passwordInput = document.getElementById('password-input');
 const passwordToggle = document.getElementById('password-toggle');
