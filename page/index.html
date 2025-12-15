@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Password Converter</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="center">
+    <h1 id="title">Password Converter</h1>
+
+    <form id="converter-form" class="card" onsubmit="return false;">
+      <label class="field">
+        <span class="label">Password</span>
+        <div class="input-with-icon">
+          <input id="password-input" type="password" autocomplete="new-password" minlength="8" required>
+          <button id="password-toggle" class="inline-toggle" type="button" aria-pressed="false" title="Show password">
+            <!-- eye SVG -->
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M12 5C7 5 2.73 8.11 1 12c1.73 3.89 6 7 11 7s9.27-3.11 11-7c-1.73-3.89-6-7-11-7z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </div>
+      </label>
+
+      <label class="field">
+        <span class="label">Salt</span>
+        <div class="input-with-icon">
+          <input id="salt-input" type="password" autocomplete="off" minlength="8" required>
+          <button id="salt-toggle" class="inline-toggle" type="button" aria-pressed="false" title="Show salt">
+            <!-- eye SVG -->
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M12 5C7 5 2.73 8.11 1 12c1.73 3.89 6 7 11 7s9.27-3.11 11-7c-1.73-3.89-6-7-11-7z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </div>
+      </label>
+
+      <!-- Row: Length and Alphabet side-by-side -->
+      <div class="row two-up">
+        <label class="field">
+          <span class="label">Length</span>
+          <input id="length-input" type="number" min="8" max="64" value="12" required>
+        </label>
+
+        <label class="field">
+          <span class="label">Alphabet</span>
+          <select id="alphabet-select">
+            <option value="base">base</option>
+            <option value="specialSimple" selected>specialSimple</option>
+            <option value="specialAdvanced">specialAdvanced</option>
+          </select>
+          <div id="alphabet-tooltip" role="tooltip" aria-hidden="true"></div>
+        </label>
+      </div>
+
+      <!-- Generated row: input stretches, buttons aligned to the right; Generate forms the right edge -->
+      <div class="row generated">
+        <label class="field stretch">
+          <span class="label">Generated</span>
+          <div class="input-with-icon">
+            <input id="generated-output" type="password" readonly>
+            <button id="output-toggle" class="inline-toggle" type="button" aria-pressed="false" title="Show generated">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M12 5C7 5 2.73 8.11 1 12c1.73 3.89 6 7 11 7s9.27-3.11 11-7c-1.73-3.89-6-7-11-7z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+          </div>
+        </label>
+
+        <div class="actions">
+          <button id="generate" type="button" class="primary">Generate</button>
+        </div>
+      </div>
+
+    </form>
+  </main>
+
+  <script type="module" src="script.js"></script>
+</body>
+</html>
