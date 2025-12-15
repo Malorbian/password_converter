@@ -75,8 +75,19 @@ function briefReveal(input) {
   span.textContent = last;
   span.style.opacity = '1';
 
-  // position near the right by default so it appears before the eye icon
-  span.style.right = '40px';
+  // position at the caret: measure text width up to the caret and account for padding/scroll
+  const pos = typeof input.selectionStart === 'number' ? input.selectionStart : val.length;
+  const before = val.slice(0, pos);
+  const cs = getComputedStyle(input);
+  // prefer computed font if available
+  const fontSpec = cs.font || `${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`;
+  _textMeasureCtx.font = fontSpec;
+  const textWidth = _textMeasureCtx.measureText(before).width;
+  const paddingLeft = parseFloat(cs.paddingLeft || '0');
+  const scrollLeft = input.scrollLeft || 0;
+  const left = Math.max(6, paddingLeft + textWidth - scrollLeft);
+  span.style.left = left + 'px';
+  span.style.removeProperty('right');
 
   // clear after timeout
   const t = setTimeout(() => {
