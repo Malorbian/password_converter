@@ -1,18 +1,18 @@
-import { convertPassword, Alphabets } from './browser_converter.js';
+const { convertPassword, Alphabets } = require('../js/converter.js');
 
 const passwordInput = document.getElementById('password-input');
+const passwordToggle = document.getElementById('password-toggle');
 const saltInput = document.getElementById('salt-input');
+const saltToggle = document.getElementById('salt-toggle');
 const lengthInput = document.getElementById('length-input');
 const alphabetSelect = document.getElementById('alphabet-select');
-const generateBtn = document.getElementById('generate');
-const output = document.getElementById('generated-output');
-const toggleBtn = document.getElementById('toggle-visibility');
 const tooltip = document.getElementById('alphabet-tooltip');
-
-const passwordToggle = document.getElementById('password-toggle');
-const saltToggle = document.getElementById('salt-toggle');
+const output = document.getElementById('generated-output');
+const outputToggle = document.getElementById('output-toggle');
+const generateBtn = document.getElementById('generate');
 
 let revealTimeouts = new Map();
+
 
 function showAlphabetTooltip(key) {
   const alpha = Alphabets[key] || Alphabets.specialSimple;
@@ -99,15 +99,15 @@ generateBtn.addEventListener('click', async () => {
   }
 });
 
-toggleBtn.addEventListener('click', () => {
+outputToggle.addEventListener('click', () => {
   if (output.type === 'password') {
     output.type = 'text';
-    toggleBtn.textContent = 'Hide';
-    toggleBtn.setAttribute('aria-pressed', 'true');
+    outputToggle.setAttribute('aria-pressed', 'true');
+    outputToggle.title = 'Hide generated';
   } else {
     output.type = 'password';
-    toggleBtn.textContent = 'Show';
-    toggleBtn.setAttribute('aria-pressed', 'false');
+    outputToggle.setAttribute('aria-pressed', 'false');
+    outputToggle.title = 'Show generated';
   }
 });
 
