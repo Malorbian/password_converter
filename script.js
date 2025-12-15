@@ -1,4 +1,4 @@
-import { convertPassword, Alphabets } from './js/converter.js';
+import { convertPassword, ALPHABETS } from './js/converter.js';
 
 const passwordInput = document.getElementById('password-input');
 const passwordToggle = document.getElementById('password-toggle');
@@ -25,7 +25,7 @@ function buildAlphabetInfoHtml(){
     {key:'specialSimple', name:'Special Characters Simple'},
     {key:'specialAdvanced', name:'Special Characters Advanced'}
   ];
-  return list.map(it => `<div class="alphabet-item"><b>${it.name}</b><div class="alphabet-chars">${(Alphabets[it.key]||'').replace(/ /g,'·')}</div></div>`).join('');
+  return list.map(it => `<div class="alphabet-item"><b>${it.name}</b><div class="alphabet-chars">${(ALPHABETS[it.key]||'').replace(/ /g,'·')}</div></div>`).join('');
 }
 
 function openAlphabetInfo(){
@@ -135,7 +135,7 @@ generateBtn.addEventListener('click', async () => {
   try {
     const len = parseInt(lengthInput.value, 10);
     const alphabetKey = alphabetSelect.value;
-    const alphabet = Alphabets[alphabetKey] || Alphabets.specialSimple;
+    const alphabet = ALPHABETS[alphabetKey] || ALPHABETS.specialSimple;
     const result = await convertPassword(passwordState.value, saltState.value, len, alphabet);
     output.value = result;
   } catch (err) {

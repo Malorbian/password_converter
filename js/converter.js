@@ -4,9 +4,6 @@ const crypto = window.crypto;
 const subtle = crypto.subtle;
 
 const DEFAULT_ITERATIONS = 100_000;
-const ALPHABET_BASE = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-const ALPHABET_SPECIAL_SIMPLE = ALPHABET_BASE + '!@#$%*()-_=+.?';
-const ALPHABET_SPECIAL_ADVANCED = ALPHABET_SPECIAL_SIMPLE + '[]{}<>^&;:,';
 const DEFAULT_SALT = 'Pas0Gen1';
 const MIN_PASSWORD_LENGTH = 8;
 const MAX_PASSWORD_LENGTH = 64;
@@ -14,12 +11,25 @@ const MIN_SALT_LENGTH = 8;
 const MAX_SALT_LENGTH = 32;
 
 /**
+ * Character sets for different character classes.
+ * @typedef {'lower' | 'upper' | 'numeric' | 'specialSimple' | 'specialAdvanced'} CharClass
+ */
+const CHAR_CLASSES = Object.freeze({
+  lower: 'abcdefghijklmnopqrstuvwxyz',
+  upper: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+  numeric: '0123456789',
+  specialSimple: '!@#$%*()-_=+.?',
+  specialAdvanced: '[]{}<>^&;:,'
+});
+
+/**
+ * Alphabets composed of different character classes combined as arrays.
  * @typedef {'base' | 'specialSimple' | 'specialAdvanced'} AlphabetType
  */
-export const Alphabets = Object.freeze({
-  base: ALPHABET_BASE,
-  specialSimple: ALPHABET_SPECIAL_SIMPLE,
-  specialAdvanced: ALPHABET_SPECIAL_ADVANCED
+export const ALPHABETS = Object.freeze({
+  base: ['lower', 'upper', 'numeric'],
+  specialSimple: ['lower', 'upper', 'numeric', 'specialSimple'],
+  specialAdvanced: ['lower', 'upper', 'numeric', 'specialSimple', 'specialAdvanced']
 });
 
 /**
@@ -32,17 +42,45 @@ export const Alphabets = Object.freeze({
  * @param {AlphabetType} alphabet - which alphabet to map to (default: specialSimple)
  * @returns {string}
  */
-export async function convertPassword(password, salt, length, alphabet = Alphabets.specialSimple) {
+export async function convertPassword(password, salt, length, alphabet = 'specialSimple') {
   
   length = Number(length) || 0;
-  isValidInput(password, salt, length, Alphabets.specialAdvanced);
+  isValidInput(password, salt, length, 'specialAdvanced');
 
-  const combinedSalt = DEFAULT_SALT + salt;
+  const enc = new TextEncoder();
+  const combinedSalt = new Uint8Array([
+    ...enc.encode(DEFAULT_SALT),
+    ...enc.encode(salt)
+  ]);
+  const encPassword = enc.encode(password);
 
-  const bytes = await pbkdf2Async(password, combinedSalt, DEFAULT_ITERATIONS, length);
-  
+  const requiredCharClasses = getRequiredCharClasses(alphabet);
+
+  // Calculate required bytes: at least length * 2 + requiredCharClasses.length - 1
+  const requiredBytes = (length + requiredCharClasses.length) * 2;
+
+  const bytes = await pbkdf2Async(encPassword, combinedSalt, DEFAULT_ITERATIONS, requiredBytes);
+
+  let offset = 0;
+
+  // Ensure at least one character from each required class
+  let chars = Object.values(requiredCharClasses).map(charSet => {
+    const byte = bytes[offset++];
+    return charSet[byte % charSet.length];
+  });
+
+  // Fill the rest of the password length with derived bytes
+  const alphabetChars = buildAlphabet(alphabet);
+  while (chars.length < length) {
+    const byte = bytes[offset++];
+    chars.push(alphabetChars[byte % alphabetChars.length]);
+  }
+
+  // Shuffle the result to avoid predictable positions
+  deterministicShuffle(chars, bytes.slice(offset));
+
   // Create a string from the derived bytes using the specified alphabet
-  return mapBytesToAlphabet(bytes, length, alphabet);
+  return chars.join('');
 }
 
 
@@ -74,24 +112,44 @@ async function pbkdf2Async(password, salt, iterations, lengthBytes) {
   return new Uint8Array(derivedBits);
 }
 
+function deterministicShuffle(array, bytes) {
+  let i;
+  if (array.length > bytes.length) {
+    i = bytes.length;
+  } else {
+    i = array.length;
+  }
+  let byteIndex = 0;
+
+  while (i > 1) {
+    const j = bytes[byteIndex++] % i;
+    i--;
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+}
+
+function buildAlphabet (alphabetName) {
+  const charSets = ALPHABETS[alphabetName];
+  if (!charSets) {
+    throw new Error(`Invalid alphabet name: ${alphabetName}`);
+  }
+  return charSets.join('');
+}
+
+function getRequiredCharClasses(alphabet) {
+  const classes = ALPHABETS[alphabet];
+  return classes.map(name => CHAR_CLASSES[name]);
+}
+
 // Checks if all characters are in the provided alphabet.
 function isInAlphabet(input, alphabet) {
+  const alphabetChars = buildAlphabet(alphabet);
   for (const char of input) {
-    if (!alphabet.includes(char)) {
+    if (!alphabetChars.includes(char)) {
       return false;
     }
   }
   return true;
-}
-
-// Maps derived bytes to characters in the provided alphabet.
-function mapBytesToAlphabet(derived, length, alphabet) {
-  const chars = new Array(length);
-  for (let i = 0; i < length; i++) {
-    const byte = derived[i];
-    chars[i] = alphabet[byte % alphabet.length];
-  }
-  return chars.join('');
 }
 
 // Check for correct types and ranges
@@ -112,7 +170,7 @@ function isValidInput(password, salt, length, alphabet) {
     throw new RangeError(`Salt must be between ${MIN_SALT_LENGTH} and ${MAX_SALT_LENGTH} characters long`);
   }
 
-  if (!Object.values(Alphabets).includes(alphabet)) {
+  if (!ALPHABETS[alphabet].includes(alphabet)) {
     throw new RangeError(`Invalid alphabet. Import and use one of the Alphabets provided by this module.`);
   }
 
