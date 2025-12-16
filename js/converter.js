@@ -39,13 +39,13 @@ export const ALPHABETS = Object.freeze({
  * @param {string} password - input password (length between 8 and 64)
  * @param {string} salt - salt (length between 8 and 32)
  * @param {number} length - desired length (number of characters) >= 8 and <= 64
- * @param {AlphabetType} alphabet - which alphabet to map to (default: specialSimple)
+ * @param {AlphabetType} outputAlphabet - which alphabet to map to (default: specialSimple)
  * @returns {string}
  */
-export async function convertPassword(password, salt, length, alphabet = 'specialSimple') {
+export async function convertPassword(password, salt, length, outputAlphabet = 'specialSimple') {
   
   length = Number(length) || 0;
-  isValidInput(password, salt, length, 'specialAdvanced');
+  isValidInput(password, salt, length);
 
   const enc = new TextEncoder();
   const combinedSalt = new Uint8Array([
@@ -54,7 +54,7 @@ export async function convertPassword(password, salt, length, alphabet = 'specia
   ]);
   const encPassword = enc.encode(password);
 
-  const requiredCharClasses = getRequiredCharClasses(alphabet);
+  const requiredCharClasses = getRequiredCharClasses(outputAlphabet);
 
   // Calculate required bytes: at least length * 2 + requiredCharClasses.length - 1
   const requiredBytes = (length + requiredCharClasses.length) * 2;
@@ -70,7 +70,7 @@ export async function convertPassword(password, salt, length, alphabet = 'specia
   });
 
   // Fill the rest of the password length with derived bytes
-  const alphabetChars = buildAlphabet(alphabet);
+  const alphabetChars = buildAlphabetString(outputAlphabet);
   while (chars.length < length) {
     const byte = bytes[offset++];
     chars.push(alphabetChars[byte % alphabetChars.length]);
@@ -86,13 +86,13 @@ export async function convertPassword(password, salt, length, alphabet = 'specia
 
 // ----- Helper -----
 
-async function pbkdf2Async(password, salt, iterations, lengthBytes) {
+async function pbkdf2Async(encPassword, salt, iterations, lengthBytes) {
   const enc = new TextEncoder();
 
   // Import password as key material
   const keyMaterial = await subtle.importKey(
     'raw',
-    enc.encode(password),
+    encPassword,
     { name: 'PBKDF2' },
     false,
     ['deriveBits']
@@ -114,36 +114,45 @@ async function pbkdf2Async(password, salt, iterations, lengthBytes) {
 
 function deterministicShuffle(array, bytes) {
   let i;
-  if (array.length > bytes.length) {
-    i = bytes.length;
-  } else {
-    i = array.length;
-  }
   let byteIndex = 0;
 
   while (i > 1) {
-    const j = bytes[byteIndex++] % i;
+    const j = bytes[byteIndex++ % bytes.length] % i;
     i--;
     [array[i], array[j]] = [array[j], array[i]];
   }
 }
 
-function buildAlphabet (alphabetName) {
+function buildAlphabetString (alphabetName) {
   const charSets = ALPHABETS[alphabetName];
   if (!charSets) {
     throw new Error(`Invalid alphabet name: ${alphabetName}`);
   }
-  return charSets.join('');
+
+  const completeAlphabetString = charSets
+    .map(name => {
+      const chars = CHAR_CLASSES[name];
+      if (!chars) {
+        throw new Error(`Invalid character class name: ${name}`);
+      }
+      return chars;
+    })
+    .join('');
+
+  return completeAlphabetString;
 }
 
-function getRequiredCharClasses(alphabet) {
-  const classes = ALPHABETS[alphabet];
-  return classes.map(name => CHAR_CLASSES[name]);
+function getRequiredCharClasses(alphabetName) {
+  const classNames = ALPHABETS[alphabetName];
+  if (!classNames) {
+    throw new Error(`Invalid alphabet name: ${alphabetName}`);
+  }
+  return classNames.map(name => CHAR_CLASSES[name]);
 }
 
 // Checks if all characters are in the provided alphabet.
 function isInAlphabet(input, alphabet) {
-  const alphabetChars = buildAlphabet(alphabet);
+  const alphabetChars = buildAlphabetString(alphabet);
   for (const char of input) {
     if (!alphabetChars.includes(char)) {
       return false;
@@ -153,7 +162,7 @@ function isInAlphabet(input, alphabet) {
 }
 
 // Check for correct types and ranges
-function isValidInput(password, salt, length, alphabet) {
+function isValidInput(password, salt, length) {
   if (typeof password !== 'string' || typeof salt !== 'string') {
     throw new TypeError('password and salt must be strings');
   }
@@ -170,15 +179,11 @@ function isValidInput(password, salt, length, alphabet) {
     throw new RangeError(`Salt must be between ${MIN_SALT_LENGTH} and ${MAX_SALT_LENGTH} characters long`);
   }
 
-  if (!ALPHABETS[alphabet].includes(alphabet)) {
-    throw new RangeError(`Invalid alphabet. Import and use one of the Alphabets provided by this module.`);
-  }
-
-  if (!isInAlphabet(password, alphabet)) {
+  if (!isInAlphabet(password, 'specialAdvanced')) {
     throw new RangeError('Password contains invalid characters');
   }
 
-  if (!isInAlphabet(salt, alphabet)) {
+  if (!isInAlphabet(salt, 'specialAdvanced')) {
     throw new RangeError('Salt contains invalid characters');
   }
 
