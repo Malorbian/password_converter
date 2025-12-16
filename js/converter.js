@@ -14,7 +14,7 @@ const MAX_SALT_LENGTH = 32;
  * Character sets for different character classes.
  * @typedef {'lower' | 'upper' | 'numeric' | 'specialSimple' | 'specialAdvanced'} CharClass
  */
-const CHAR_CLASSES = Object.freeze({
+export const CHAR_CLASSES = Object.freeze({
   lower: 'abcdefghijklmnopqrstuvwxyz',
   upper: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
   numeric: '0123456789',
