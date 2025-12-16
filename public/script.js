@@ -1,4 +1,5 @@
 import { convertPassword, ALPHABETS } from './js/converter.js';
+import { MaskedInputController } from './js/maskedInputController.js';
 
 const passwordInput = document.getElementById('password-input');
 const passwordToggle = document.getElementById('password-toggle');
@@ -11,10 +12,6 @@ const alphabetInfo = document.getElementById('alphabet-info');
 const output = document.getElementById('generated-output');
 const outputToggle = document.getElementById('output-toggle');
 const generateBtn = document.getElementById('generate');
-
-let maskTimeout;
-const passwordState = { value: '' };
-const saltState = { value: '' };
 
 
 // ----- Alphabet tooltip handling -----
@@ -54,26 +51,23 @@ document.addEventListener('click', (e)=>{
 });
 
 
-// ----- Input/Output mask toggle -----
 
-toggleTextMaskListener(passwordInput, passwordState, passwordToggle);
-toggleTextMaskListener(saltInput, saltState, saltToggle);
 
-function toggleTextMaskListener(inputField, storedValue, toggleBtn) {
-  toggleBtn.addEventListener('click', () => {
-    const visible = toggleBtn.getAttribute('aria-pressed') === 'true';
 
-    if (visible) {
-      inputField.value = createMaskedString(storedValue.value.length);
-      toggleBtn.setAttribute('aria-pressed', 'false');
-      inputField.title = 'Show';
-    } else {
-      inputField.value = storedValue.value;
-      toggleBtn.setAttribute('aria-pressed', 'true');
-      inputField.title = 'Hide';
-    }
-  });
-}
+// ----- Input fields handling -----
+
+const passwordCtrl = new MaskedInputController(passwordInput, 700);
+const saltCtrl = new MaskedInputController(saltInput, 700);
+
+passwordToggle.addEventListener('click', () => {
+  passwordCtrl.toggleMask();
+});
+saltToggle.addEventListener('click', () => {
+  saltCtrl.toggleMask();
+});
+
+
+// ----- Output mask toggle -----
 
 togglePasswordVisibilityListener(outputToggle, output);
 
@@ -92,62 +86,16 @@ function togglePasswordVisibilityListener(toggleBtn, outputField) {
 }
 
 
-// ----- Mask delay for masked input fields -----
-
-passwordMaskDelayListener(passwordInput, passwordState);
-passwordMaskDelayListener(saltInput, saltState);
-
-/**
- * Makes a text field behave like a password field with delayed masking. Actual input values are stored separately.
- * @param {HTMLInputElement} inputField - input element 
- * @param {Object} storedValue - external object with correct stored value of input 
- * @param {number} duration - duration until masking in ms
- */
-function passwordMaskDelayListener(inputField, storedValue, duration = 500) {
-  inputField.addEventListener('input', () => {
-    const newChar = inputField.value.slice(-1);
-    storedValue.value += newChar;
-
-    inputField.value = createMaskedString(storedValue.value.length - 1) + newChar;
-
-    if (maskTimeout) clearTimeout(maskTimeout);
-
-    maskTimeout = setTimeout(() => {
-      inputField.value = createMaskedString(storedValue.value.length);
-    }, duration);
-  });
-
-  // Correct stored value for backspaces and mask immediately on keydown
-  inputField.addEventListener('keydown', (e) => {
-    if (e.key === 'Backspace') {
-      storedValue.value = storedValue.value.slice(0, -1);
-    } else {
-      clearTimeout(maskTimeout);
-      inputField.value = createMaskedString(storedValue.value.length);
-    }
-});
-}
-
-
 // ----- Generate output handling -----
 
 generateBtn.addEventListener('click', async () => {
   try {
     const len = parseInt(lengthInput.value, 10);
     const alphabetKey = alphabetSelect.value;
-    const alphabet = ALPHABETS[alphabetKey] || ALPHABETS.specialSimple;
-    const result = await convertPassword(passwordState.value, saltState.value, len, alphabet);
+    const result = await convertPassword(passwordCtrl.value, saltCtrl.value, len, alphabetKey);
     output.value = result;
   } catch (err) {
     output.value = '';
     alert('Error: ' + err.message);
   }
 });
-
-
-// ----- Helper -----
-
-// Creates a chain of dots as masked string of given length.
-function createMaskedString(iterations) {
-  return '•'.repeat(iterations);
-}

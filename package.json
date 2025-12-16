@@ -12,6 +12,6 @@
   },
   "scripts": {
     "test": "node test/test_converter.js",
-    "serve-local": "if not exist gh-pages-temp\\js mkdir gh-pages-temp\\js && xcopy /E /I /Y public\\* gh-pages-temp\\ && copy src\\converter.js gh-pages-temp\\js\\ && npx serve gh-pages-temp"
+    "serve-local": "if not exist gh-pages-temp\\js mkdir gh-pages-temp\\js && xcopy /E /I /Y public\\* gh-pages-temp\\ && copy src\\converter.js gh-pages-temp\\js\\ && copy src\\maskedInputController.js gh-pages-temp\\js\\ && npx serve gh-pages-temp"
   }
 }

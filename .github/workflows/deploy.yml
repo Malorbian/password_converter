@@ -24,6 +24,7 @@ jobs:
 
           mkdir -p gh-pages-temp/js
           cp src/converter.js gh-pages-temp/js/
+          cp src/maskedInputController.js gh-pages-temp/js/
 
       - name: Commit & push to gh-pages
         uses: peaceiris/actions-gh-pages@v3
