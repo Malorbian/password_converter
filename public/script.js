@@ -1,4 +1,4 @@
-import { convertPassword, ALPHABETS } from './js/converter.js';
+import { convertPassword, ALPHABETS, CHAR_CLASSES } from './js/converter.js';
 import { MaskedInputController } from './js/maskedInputController.js';
 
 const passwordInput = document.getElementById('password-input');
@@ -13,20 +13,33 @@ const output = document.getElementById('generated-output');
 const outputToggle = document.getElementById('output-toggle');
 const generateBtn = document.getElementById('generate');
 
+let alphabetHTMLInfo;
+
 
 // ----- Alphabet tooltip handling -----
 
-function buildAlphabetInfoHtml(){
+function buildAlphabetInfoHtml() {
   const list = [
-    {key:'base', name:'Base'},
-    {key:'specialSimple', name:'Special Characters Simple'},
-    {key:'specialAdvanced', name:'Special Characters Advanced'}
+    { key: 'base', name: 'Base' },
+    { key: 'specialSimple', name: 'Special Characters Simple' },
+    { key: 'specialAdvanced', name: 'Special Characters Advanced' }
   ];
-  return list.map(it => `<div class="alphabet-item"><b>${it.name}</b><div class="alphabet-chars">${(ALPHABETS[it.key]||'').replace(/ /g,'·')}</div></div>`).join('');
+
+  const lines = list.map(it => {
+    const chars = (ALPHABETS[it.key] || [])
+      .map(c => CHAR_CLASSES[c]) 
+      .join('');
+    return `<b>${it.name}:</b> ${chars.replace(/ /g,'·')}<br>`;
+  });
+
+  return `<div class="alphabet-info-content">${lines.join('<br>')}</div>`;
 }
 
 function openAlphabetInfo(){
-  tooltip.innerHTML = buildAlphabetInfoHtml();
+  if (!alphabetHTMLInfo) {
+    alphabetHTMLInfo = buildAlphabetInfoHtml();
+  }
+  tooltip.innerHTML = alphabetHTMLInfo;
   tooltip.style.display = 'block';
   tooltip.setAttribute('aria-hidden','false');
   alphabetInfo.setAttribute('aria-expanded','true');
@@ -39,9 +52,16 @@ function closeAlphabetInfo(){
 }
 // open/close info on button click
 alphabetInfo.addEventListener('click', (e)=>{
+  console.log('click');
   e.stopPropagation();
   const expanded = alphabetInfo.getAttribute('aria-expanded') === 'true';
-  if (expanded) closeAlphabetInfo(); else openAlphabetInfo();
+  if (expanded) {
+    closeAlphabetInfo();
+    console.log('close');
+  } else {
+    console.log('open');
+    openAlphabetInfo();
+  } 
 });
 // close info when clicking outside
 document.addEventListener('click', (e)=>{

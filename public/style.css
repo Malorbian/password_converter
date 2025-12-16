@@ -210,25 +210,27 @@ button.primary{
   border-color: rgba(79,195,247,0.18);
 }
 
-#alphabet-tooltip{
-  position:absolute;
-  left:0;
-  top: calc(100% + 6px);
-  z-index:40;
-  background: rgba(11, 8, 48, 0.6);
-  padding:10px;
-  border-radius:8px;
+#alphabet-tooltip {
+  position: absolute;
+  left: 0;
+  top: calc(100% + 4px);
+  z-index: 40;
+  background: rgba(11, 8, 48, 0.9);
+  padding: 6px 8px;
+  border-radius: 6px;
   font-family: monospace;
-  font-size:12px;
-  display:none;
-  white-space:pre-wrap;
+  font-size: 12px;
+  display: none;
+  white-space: pre-wrap;
   min-width: 220px;
   box-sizing: border-box;
   pointer-events: auto;
 }
 
-.alphabet-item{margin-bottom:8px}
-.alphabet-item b{display:block; margin-bottom:4px}
+.alphabet-info-content b {
+  font-weight: 700;
+  margin-right: 4px;
+}
 
 .input-with-icon{position:relative;}
 .input-with-icon input{padding-right:40px;}
