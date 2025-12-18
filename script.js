@@ -1,4 +1,4 @@
-import { convertPassword, ALPHABETS, CHAR_CLASSES } from './js/converter.js';
+import { convertPassword, POLICIES, CHAR_CLASSES } from './js/converter.js';
 import { MaskedInputController } from './js/maskedInputController.js';
 
 const passwordInput = document.getElementById('password-input');
@@ -26,7 +26,8 @@ function buildAlphabetInfoHtml() {
   ];
 
   const lines = list.map(it => {
-    const chars = (ALPHABETS[it.key] || [])
+    const policy = POLICIES[it.key];
+    const chars = (policy?.alphabet || [])
       .map(c => CHAR_CLASSES[c])
       .join('');
     return `<b>${it.name}:</b> ${chars.replace(/ /g, '·')}<br>`;
