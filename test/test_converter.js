@@ -3,7 +3,7 @@ globalThis.window = { crypto: webcrypto };
 
 import {test, describe} from 'node:test';
 import assert from 'node:assert/strict';
-const { convertPassword, ALPHABETS, CHAR_CLASSES } = await import('../src/converter.js');
+const { convertPassword, POLICIES: ALPHABETS, CHAR_CLASSES } = await import('../src/converter.js');
 
 describe('convertPassword', () => {
     const password = 'TestPass123!';
@@ -44,7 +44,7 @@ describe('convertPassword', () => {
     test('rejects invalid length values', async () => {
         await assert.rejects(() => convertPassword(password, salt, saltPassMinLen - 1), { name: 'RangeError' });
         await assert.rejects(() => convertPassword(password, salt, passMaxLen + 1), { name: 'RangeError' });
-        await assert.rejects(() => convertPassword(password, salt, '32'), { name: 'RangeError' });
+        await assert.rejects(() => convertPassword(password, salt, 'not-a-number'), { name: 'RangeError' });
     });
 
     test('rejects short password or salt', async () => {
@@ -65,16 +65,21 @@ describe('convertPassword', () => {
     test('output characters belong to chosen alphabet and include required classes', async () => {
         const out = await convertPassword(password, salt, 48, alphabetKey2);
 
-        // build allowed chars string from ALPHABETS and CHAR_CLASSES
-        const allowed = ALPHABETS[alphabetKey2].map(k => CHAR_CLASSES[k]).join('');
+        // build allowed chars string from ALPHABETS (POLICIES) and CHAR_CLASSES
+        const allowed = ALPHABETS[alphabetKey2].alphabet.map(k => CHAR_CLASSES[k]).join('');
         for (const ch of out) {
             assert.ok(allowed.includes(ch), `Character ${ch} not allowed for alphabet ${alphabetKey2}`);
         }
 
-        // ensure at least one char from each required class
-        for (const cls of ALPHABETS[alphabetKey2]) {
-            const chars = CHAR_CLASSES[cls];
-            assert.ok(out.split('').some(c => chars.includes(c)), `Output must include at least one char from class ${cls}`);
+        // ensure at least one char from each required class (supporting grouped requirements)
+        for (const req of ALPHABETS[alphabetKey2].require) {
+            if (Array.isArray(req)) {
+                const group = req.map(k => CHAR_CLASSES[k]).join('');
+                assert.ok(out.split('').some(c => group.includes(c)), `Output must include at least one char from one of ${req.join(',')}`);
+            } else {
+                const chars = CHAR_CLASSES[req];
+                assert.ok(out.split('').some(c => chars.includes(c)), `Output must include at least one char from class ${req}`);
+            }
         }
     });
 

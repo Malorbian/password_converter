@@ -36,6 +36,7 @@ I am not an expert in this area. This is a personal project and not professional
 - This generator uses PBKDF2 with SHA-512 and 100,000 iterations.
 - Min/Max password length: 8–64 characters
 - Min/Max salt length: 8–32 characters
+- Generated password always includes at least one character of each character class based on output alphabet (character classes: lower, upper, numeric, special)
 - Possible Alphabets for generated password (input alphabet is Advanced):
     - Base: `abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789`
     - Simple: Base + `!@#$%*()-_=+.?`
