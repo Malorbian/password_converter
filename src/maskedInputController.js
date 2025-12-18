@@ -7,8 +7,8 @@ export class MaskedInputController {
     #timeout = null;
 
     constructor(input, delay = 500) {
-        if (!(input instanceof HTMLInputElement)) {
-            throw new TypeError('input must be an HTMLInputElement');
+        if (!input || typeof input.addEventListener !== 'function' || typeof input.setSelectionRange !== 'function') {
+            throw new TypeError('input must be an input-like element with addEventListener and setSelectionRange');
         }
         if (!Number.isInteger(delay) || delay < 0) {
             throw new TypeError('delay must be a non-negative integer');
@@ -117,7 +117,7 @@ export class MaskedInputController {
             this.#timeout = setTimeout(() => this.#render(), this.#delay);
         }
 
-        if (this.#input === document.activeElement) {
+        if (typeof document !== 'undefined' && this.#input === document.activeElement) {
             this.#input.setSelectionRange(cursor, cursor);
         }
     };

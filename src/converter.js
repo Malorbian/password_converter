@@ -170,8 +170,8 @@ function isValidInput(password, salt, length) {
     throw new RangeError(`Length must be an integer between ${MIN_PASSWORD_LENGTH} and ${MAX_PASSWORD_LENGTH}`);
   }
 
-  if (password.length < MIN_PASSWORD_LENGTH) {
-    throw new RangeError(`Password must be at least ${MIN_PASSWORD_LENGTH} characters long`);
+  if (password.length < MIN_PASSWORD_LENGTH || password.length > MAX_PASSWORD_LENGTH) {
+    throw new RangeError(`Password must be between ${MIN_PASSWORD_LENGTH} and ${MAX_PASSWORD_LENGTH} characters long`);
   }
 
   if (salt.length < MIN_SALT_LENGTH || salt.length > MAX_SALT_LENGTH) {
