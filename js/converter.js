@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 
 const crypto = window.crypto;
 const subtle = crypto.subtle;
@@ -43,7 +43,7 @@ export const ALPHABETS = Object.freeze({
  * @returns {string}
  */
 export async function convertPassword(password, salt, length, outputAlphabet = 'specialSimple') {
-  
+
   length = Number(length) || 0;
   isValidInput(password, salt, length);
 
@@ -123,7 +123,7 @@ function deterministicShuffle(array, bytes) {
   }
 }
 
-function buildAlphabetString (alphabetName) {
+function buildAlphabetString(alphabetName) {
   const charSets = ALPHABETS[alphabetName];
   if (!charSets) {
     throw new Error(`Invalid alphabet name: ${alphabetName}`);
@@ -150,7 +150,6 @@ function getRequiredCharClasses(alphabetName) {
   return classNames.map(name => CHAR_CLASSES[name]);
 }
 
-// Checks if all characters are in the provided alphabet.
 function isInAlphabet(input, alphabet) {
   const alphabetChars = buildAlphabetString(alphabet);
   for (const char of input) {
