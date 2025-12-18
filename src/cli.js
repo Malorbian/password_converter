@@ -1,46 +1,45 @@
 #! /usr/bin/env node
 'use strict';
 
-// Dynamic import of ESM module
+import { webcrypto } from 'node:crypto';
+globalThis.window = { crypto: webcrypto };
 
-async function loadConverter() {
-  const mod = await import('./converter.js');
-  return mod;
-}
+const { convertPassword, POLICIES: ALPHABETS} = await import('../src/converter.js');
 
 function printUsageAndExit() {
-  console.error('Usage: node cli.js <password> <salt> <length> [alphabet]');
-  process.exit(2);
+	console.error('Usage: node src/cli.js <password> <salt> <length> [policy]');
+	console.error('Available policies:', Object.keys(ALPHABETS).join(', '));
+	process.exit(2);
 }
 
-if (require.main === module) {
-  const argv = process.argv.slice(2);
-  if (argv.length !== 3 && argv.length !== 4) {
-    printUsageAndExit();
-  }
+async function main() {
+	const argv = process.argv.slice(2);
+	if (argv.length !== 3 && argv.length !== 4) {
+		printUsageAndExit();
+	}
 
-  const [password, salt, lengthStr, alphabetStr] = argv;
-  const length = parseInt(lengthStr, 10);
-  if (!Number.isInteger(length)) {
-    console.error('Error: length must be an integer');
-    process.exit(2);
-  }
-  // load converter and call with policy name
-  (async () => {
-    try {
-      const mod = await loadConverter();
-      const { convertPassword, POLICIES } = mod;
-      const policyName = alphabetStr || 'specialSimple';
-      if (!POLICIES[policyName]) {
-        console.error('Error: invalid alphabet/policy name:', policyName);
-        process.exit(2);
-      }
+	const [password, salt, lengthStr, policyName = 'specialSimple'] = argv;
+	const length = Number.parseInt(lengthStr, 10);
+	if (!Number.isInteger(length)) {
+		console.error('Error: <length> must be an integer');
+		process.exit(2);
+	}
 
-      const out = await convertPassword(password, salt, length, policyName);
-      console.log(out);
-    } catch (err) {
-      console.error('Error:', err.message);
-      process.exit(1);
-    }
-  })();
+	if (!ALPHABETS[policyName]) {
+		console.error('Error: unknown policy', policyName);
+		printUsageAndExit();
+	}
+
+	try {
+		const out = await convertPassword(password, salt, length, policyName);
+		console.log(out);
+	} catch (err) {
+		console.error('Error:', err.message ?? err);
+		process.exit(1);
+	}
 }
+
+if (process.argv[1] && process.argv[1].endsWith('cli.js')) {
+	main();
+}
+
