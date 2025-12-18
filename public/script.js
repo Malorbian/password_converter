@@ -27,31 +27,31 @@ function buildAlphabetInfoHtml() {
 
   const lines = list.map(it => {
     const chars = (ALPHABETS[it.key] || [])
-      .map(c => CHAR_CLASSES[c]) 
+      .map(c => CHAR_CLASSES[c])
       .join('');
-    return `<b>${it.name}:</b> ${chars.replace(/ /g,'·')}<br>`;
+    return `<b>${it.name}:</b> ${chars.replace(/ /g, '·')}<br>`;
   });
 
   return `<div class="alphabet-info-content">${lines.join('<br>')}</div>`;
 }
 
-function openAlphabetInfo(){
+function openAlphabetInfo() {
   if (!alphabetHTMLInfo) {
     alphabetHTMLInfo = buildAlphabetInfoHtml();
   }
   tooltip.innerHTML = alphabetHTMLInfo;
   tooltip.style.display = 'block';
-  tooltip.setAttribute('aria-hidden','false');
-  alphabetInfo.setAttribute('aria-expanded','true');
+  tooltip.setAttribute('aria-hidden', 'false');
+  alphabetInfo.setAttribute('aria-expanded', 'true');
 }
 
-function closeAlphabetInfo(){
+function closeAlphabetInfo() {
   tooltip.style.display = 'none';
-  tooltip.setAttribute('aria-hidden','true');
-  alphabetInfo.setAttribute('aria-expanded','false');
+  tooltip.setAttribute('aria-hidden', 'true');
+  alphabetInfo.setAttribute('aria-expanded', 'false');
 }
 // open/close info on button click
-alphabetInfo.addEventListener('click', (e)=>{
+alphabetInfo.addEventListener('click', (e) => {
   console.log('click');
   e.stopPropagation();
   const expanded = alphabetInfo.getAttribute('aria-expanded') === 'true';
@@ -61,10 +61,10 @@ alphabetInfo.addEventListener('click', (e)=>{
   } else {
     console.log('open');
     openAlphabetInfo();
-  } 
+  }
 });
 // close info when clicking outside
-document.addEventListener('click', (e)=>{
+document.addEventListener('click', (e) => {
   const wrapper = alphabetSelect.closest('.select-with-info');
   if (!wrapper) return;
   if (!wrapper.contains(e.target)) closeAlphabetInfo();
