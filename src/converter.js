@@ -12,14 +12,24 @@ const MAX_SALT_LENGTH = 32;
 
 /**
  * Character sets for different character classes.
- * @typedef {'lower' | 'upper' | 'numeric' | 'specialSimple' | 'specialAdvanced'} CharClass
+ * @typedef {'lower' | 'upper' | 'numeric' | 'specialCharsSimple' | 'specialCharsAdvanced'} CharClass
  */
 export const CHAR_CLASSES = Object.freeze({
   lower: 'abcdefghijklmnopqrstuvwxyz',
   upper: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
   numeric: '0123456789',
-  specialSimple: '!@#$%*()-_=+.?',
-  specialAdvanced: '[]{}<>^&;:,'
+  specialCharsSimple: '!@#$%*()-_=+.?',
+  specialCharsAdvanced: '[]{}<>^&;:,'
+});
+
+/**
+ * required character sets for each alphabet type.
+ * @typedef {'baseCharSets' | 'specialSimpleCharSets' | 'specialAdvancedCharSets'} RequiredCharSet
+ */
+export const requiredCharSets = Object.freeze({
+  baseCharSets: [CHAR_CLASSES.lower, CHAR_CLASSES.upper, CHAR_CLASSES.numeric],
+  specialSimpleCharSets: [CHAR_CLASSES.lower, CHAR_CLASSES.upper, CHAR_CLASSES.numeric, CHAR_CLASSES.specialCharsSimple],
+  specialAdvancedCharSets: [CHAR_CLASSES.lower, CHAR_CLASSES.upper, CHAR_CLASSES.numeric, CHAR_CLASSES.specialCharsSimple + CHAR_CLASSES.specialCharsAdvanced]
 });
 
 /**
@@ -28,8 +38,8 @@ export const CHAR_CLASSES = Object.freeze({
  */
 export const ALPHABETS = Object.freeze({
   base: ['lower', 'upper', 'numeric'],
-  specialSimple: ['lower', 'upper', 'numeric', 'specialSimple'],
-  specialAdvanced: ['lower', 'upper', 'numeric', 'specialSimple', 'specialAdvanced']
+  specialCharsSimple: ['lower', 'upper', 'numeric', 'specialCharsSimple'],
+  specialCharsAdvanced: ['lower', 'upper', 'numeric', 'specialCharsSimple', 'specialCharsAdvanced']
 });
 
 /**
@@ -54,17 +64,17 @@ export async function convertPassword(password, salt, length, outputAlphabet = '
   ]);
   const encPassword = enc.encode(password);
 
-  const requiredCharClasses = getRequiredCharClasses(outputAlphabet);
+  const requiredCharSets = getRequiredCharSets(outputAlphabet);
 
-  // Calculate required bytes: at least length * 2 + requiredCharClasses.length - 1
-  const requiredBytes = (length + requiredCharClasses.length) * 2;
+  // Calculate required bytes: at least length * 2 + requiredCharSets.length - 1
+  const requiredBytes = (length + requiredCharSets.length) * 2;
 
   const bytes = await pbkdf2Async(encPassword, combinedSalt, DEFAULT_ITERATIONS, requiredBytes);
 
   let offset = 0;
 
   // Ensure at least one character from each required class
-  let chars = Object.values(requiredCharClasses).map(charSet => {
+  let chars = Object.values(requiredCharSets).map(charSet => {
     const byte = bytes[offset++];
     return charSet[byte % charSet.length];
   });
@@ -142,12 +152,17 @@ function buildAlphabetString(alphabetName) {
   return completeAlphabetString;
 }
 
-function getRequiredCharClasses(alphabetName) {
-  const classNames = ALPHABETS[alphabetName];
-  if (!classNames) {
-    throw new Error(`Invalid alphabet name: ${alphabetName}`);
+function getRequiredCharSets(alphabetName) {
+  switch (alphabetName) {
+    case 'base':
+      return requiredCharSets.baseCharSets;
+    case 'specialSimple':
+      return requiredCharSets.specialSimpleCharSets;
+    case 'specialAdvanced':
+      return requiredCharSets.specialAdvancedCharSets;
+    default:
+      throw new Error(`Invalid alphabet name: ${alphabetName}`);
   }
-  return classNames.map(name => CHAR_CLASSES[name]);
 }
 
 function isInAlphabet(input, alphabet) {

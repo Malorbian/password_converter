@@ -82,7 +82,7 @@ describe('convertPassword', () => {
         const outBase = await convertPassword(password, salt, 48, 'base');
         const outSpecial = await convertPassword(password, salt, 48, 'specialSimple');
 
-        const specials = CHAR_CLASSES.specialSimple;
+        const specials = CHAR_CLASSES.specialCharsSimple;
 
         assert.ok(![...outBase].some(c => specials.includes(c)),
             'base alphabet must not contain special chars');
