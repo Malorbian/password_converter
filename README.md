@@ -14,20 +14,20 @@ To generate a strong password, provide:
 - choose an alphabet for generated password (allowed characters)
 
 ## Security
-Notes and recommendations:
-- Your generated password should be at least 12 characters long.
+### Recommendations
+- Generated password should be at least 12 characters long.
 - Use a unique salt per account (site-specific salt) to ensure different derived passwords for different accounts.
-- Make sure the generated password meets the target site's password policy (allowed characters, required symbols, maximum length, etc.). See the Technical Details below for the allowed characters used by this generator.
-- Using a longer alphabet makes your password stronger.
-- This approach significantly improves protection against generalized attacks compared to using simpler, memorable passwords.
-- If an attacker specifically targets you and knows you use this scheme, security depends heavily on the strength of your initial password and the secrecy of your salt. A weak initial password can make the derived password vulnerable.
-- Generating passwords locally in the browser avoids storing or transferring them remotely, but it does not protect you if your device is compromised.
-- If the site or program you use transmits or stores passwords insecurely (no TLS, poor server-side storage), you may need a longer or stronger derived password to compensate.
-
-## Recommendations
-- If you use a master password with different salts for your accounts, make sure your master password is reasonably strong.
+- Ensure the generated password complies with the target site's password policy (allowed characters, required symbols, maximum length, etc.). Refer to the *Technical Details* section for the character sets used by this generator.
+- Using a larger character alphabet increases password strength.
+- If you use a single master password with different salts, make sure the master password itself is sufficiently strong.
 - Use browser-based local generation only if you trust your device and the browser environment.
-- For most users, a reputable password manager remains the most user-friendly and secure option; this tool can be helpful for users who prefer local deterministic generation or want an alternative approach.
+- For most users, a reputable password manager remains the most user-friendly and secure option; This tool is intended for users who prefer deterministic, local password generation or want an alternative approach.
+### Security of This Tool
+- This approach significantly improves resistance against generalized attacks compared to using simpler, memorable passwords.
+- If an attacker specifically targets you and knows you use this scheme, security depends heavily on the strength of your initial password and the secrecy of your salt. A weak initial password can make the derived password vulnerable.
+- Local password generation avoids remote storage or transmission, but it does not protect against a compromised device or malicious browser environment.
+- If a website or application handles passwords insecurely (e.g. missing TLS or weak server-side storage), using a longer or more complex derived password may help mitigate the risk.
+
 
 ## Downloadable Offline Password Generator
 - Based on the online version of the password generator
