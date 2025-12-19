@@ -12,9 +12,7 @@
   },
   "scripts": {
     "test": "node --test",
-    "serve-local": "if not exist gh-pages-temp\\js mkdir gh-pages-temp\\js && xcopy /E /I /Y public\\* gh-pages-temp\\ && copy src\\converter.js gh-pages-temp\\js\\ && copy src\\maskedInputController.js gh-pages-temp\\js\\ && npx serve gh-pages-temp"
-  },
-  "devDependencies": {
-    "vitest": "^4.0.16"
+    "serve-local": "if not exist gh-pages-temp\\js mkdir gh-pages-temp\\js && xcopy /E /I /Y public\\* gh-pages-temp\\ && copy src\\converter.js gh-pages-temp\\js\\ && copy src\\maskedInputController.js gh-pages-temp\\js\\ && npx serve gh-pages-temp",
+    "build:offline": "xcopy /E /I /Y public password_generator_offline\\site && copy src\\converter.js password_generator_offline\\site\\js\\ && copy src\\maskedInputController.js password_generator_offline\\site\\js\\"
   }
 }

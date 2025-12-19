@@ -29,6 +29,13 @@ Notes and recommendations:
 - Use browser-based local generation only if you trust your device and the browser environment.
 - For most users, a reputable password manager remains the most user-friendly and secure option; this tool can be helpful for users who prefer local deterministic generation or want an alternative approach.
 
+## Downloadable Offline Password Generator
+- Based on the online version of the password generator
+- Download the 'password_generator_offline' folder
+- Run one of the 'start_' files
+- While the terminal window is open, the password generator is hosted as a local website
+- Closing the terminal window will stop the local server
+
 ## Disclaimer
 I am not an expert in this area. This is a personal project and not professional security advice. Use this tool at your own risk. Verify its suitability for your needs and consult a security professional if you require a higher assurance. No warranties are provided.
 
@@ -42,3 +49,14 @@ I am not an expert in this area. This is a personal project and not professional
     - Base: `abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789`
     - Simple: Base + `!@#$%*()-_=+.?`
     - Advanced: Simple + `[]{}<>^&;:,`
+### Algorithm
+1. Validate input parameters (password, salt, length, outputAlphabet)
+2. Combine a fixed default salt with the user-provided salt
+3. Determine required character sets based on the selected output alphabet  
+   (lowercase, uppercase, numeric, and optionally special characters)
+4. Calculate the number of bytes required for character generation and shuffling
+5. Derive a deterministic byte array using PBKDF2 (SHA-512)
+6. Map the first bytes to ensure at least one character from each required character set
+7. Map additional bytes to the full output alphabet until the desired length is reached
+8. Perform a deterministic shuffle using remaining derived bytes
+9. Return the final generated password
