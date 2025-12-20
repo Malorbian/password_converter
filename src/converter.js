@@ -142,8 +142,8 @@ function buildAlphabetString(alphabetArray) {
   return alphabetArray.map(cls => CHAR_CLASSES[cls]).join('');
 }
 
-function isInAlphabet(input, alphabet) {
-  const alphabetChars = buildAlphabetString(alphabet);
+function isInAlphabet(input, alphabetArray) {
+  const alphabetChars = buildAlphabetString(alphabetArray);
   for (const char of input) {
     if (!alphabetChars.includes(char)) {
       return false;
@@ -182,3 +182,10 @@ function isValidInput(password, salt, length) {
 
   return true;
 }
+
+
+// ----- Exports for testing -----
+
+export const __test__ = {
+  deterministicShuffle
+};

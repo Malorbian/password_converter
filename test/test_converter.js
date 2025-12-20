@@ -3,7 +3,7 @@ globalThis.window = { crypto: webcrypto };
 
 import {test, describe} from 'node:test';
 import assert from 'node:assert/strict';
-const { convertPassword, POLICIES: ALPHABETS, CHAR_CLASSES } = await import('../src/converter.js');
+const { convertPassword, POLICIES: ALPHABETS, CHAR_CLASSES, __test__ } = await import('../src/converter.js');
 
 describe('convertPassword', () => {
     const password = 'TestPass123!';
@@ -98,6 +98,24 @@ describe('convertPassword', () => {
 
     test('invalid alphabet name rejects', async () => {
         await assert.rejects(() => convertPassword(password, salt, 12, 'no-such-alphabet'), Error);
+    });
+
+    test('deterministic shuffle produces consistent results', async () => {
+        const out1 = await convertPassword(password, salt, 32, 'specialAdvanced');
+        const out2 = await convertPassword(password, salt, 32, 'specialAdvanced');
+        assert.strictEqual(out1, out2);
+    });
+
+    test('deterministic shuffle creates same output given same bytes and actually shuffles', async () => {
+        const array = ['a', 'b', 'c', 'd', 'e'];
+        const bytes = new Uint8Array([1, 2, 3, 4, 5]);
+        const arrayCopy = [...array];
+
+        __test__.deterministicShuffle(array, bytes);
+        __test__.deterministicShuffle(arrayCopy, bytes);
+
+        assert.deepStrictEqual(array, arrayCopy);
+        assert.notDeepStrictEqual(array, ['a', 'b', 'c', 'd', 'e']);
     });
 
 });
