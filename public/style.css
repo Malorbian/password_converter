@@ -1,10 +1,11 @@
 :root {
   --bg: #001026;
-  /* midnight blue */
   --card: rgba(255, 255, 255, 0.03);
-  --accent: #4fc3f7;
+  --accent-rgb: 79, 195, 247;
+  --accent: rgb(var(--accent-rgb), 1);
   --text: #e6f7ff;
   --muted: rgba(230, 247, 255, 0.6);
+  --field_bg: rgba(0, 10, 24, 0.18);
 }
 
 html,
@@ -14,12 +15,10 @@ body {
 
 body {
   margin: 0;
-  /* moved the radial light center to the left outside the viewport (vertically centered)
-     and increased its size / falloff by adjusting color stop percentages */
-  background: radial-gradient(circle at -25% 50%, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.03) 40%, transparent 120%), var(--bg);
-  color: var(--text);
   font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
-  -webkit-font-smoothing: antialiased;
+  color: var(--text);
+  background: radial-gradient(circle at -25% 50%, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.03) 40%, transparent 120%), var(--bg);
+  -webkit-font-smoothing: antialiased; 
   -moz-osx-font-smoothing: grayscale;
   display: flex;
   align-items: center;
@@ -34,29 +33,23 @@ body {
 }
 
 h1#title {
-  margin: 0 0 24px 0;
+  margin-bottom: 24px;
   text-align: center;
   font-size: 32px;
-  letter-spacing: 0.5px;
 }
 
 .card {
   background: var(--card);
   padding: 24px;
   border-radius: 12px;
-  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.6);
-  /* Use CSS Grid so fields align consistently and fill available width */
+  box-shadow: 0 6px 24px rgba(0,0,0,0.6);
   display: grid;
-  grid-template-columns: 1fr;
   gap: 14px;
 }
 
-/* Rows remain flex for generated actions, but two-up uses grid for equal columns */
 .row {
   display: flex;
   gap: 12px;
-  /* align to top so labels remain above their inputs */
-  align-items: flex-start;
 }
 
 .row.two-up {
@@ -65,20 +58,136 @@ h1#title {
   gap: 12px;
 }
 
-.select-with-info {
+.row.three-up {
+  display: grid;
+  grid-template-columns: auto auto auto;
+}
+
+/* Form Fields */
+.form-field {
+  display: flex;
+  flex-direction: column;
+}
+
+.label {
+  font-size: 13px;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+
+.select-with-info { 
+  display: flex; 
+  align-items: center; 
+  gap: 8px; 
+  position: relative; 
+} 
+
+.select-with-info select { 
+  min-width: 240px; 
+}
+
+select::-ms-expand { 
+  display: none; 
+}
+
+/* Inputs & Selects */
+input[type="text"],
+input[type="password"],
+input[type="number"],
+select {
+  background: var(--field_bg);
+  color: var(--text);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 8px;
+  padding: 10px 12px;
+  height: 40px;
+  width: 100%;
+  outline: none;
+  box-sizing: border-box;
+  box-shadow: 0 0 0 4px rgba(var(--accent-rgb), 0);
+  -webkit-appearance: none;
+  appearance: none;
+  background-repeat: no-repeat; 
+  background-position: right 12px center; 
+  box-sizing: border-box;
+}
+
+select  {
+  padding-right: 36px; 
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%23e6f7ff' d='M6 8L0 0h12z'/%3E%3C/svg%3E");
+}
+
+input:focus, 
+select:focus { 
+  border-color: var(--accent); 
+  box-shadow: 0 0 0 4px rgba(var(--accent-rgb), 0.02); 
+  border-radius: 8px; 
+  outline: none;
+}
+
+select option { 
+  background: rgba(0, 10, 28, 0.95);
+  color: var(--text); 
+  padding: 6px 8px; 
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield; /* Firefox */
+  appearance: textfield;      /* modern */
+}
+
+/* Input with toggle icon */
+.input-with-icon {
+  position: relative;
+}
+
+.inline-toggle {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  color: var(--muted);
+  padding: 6px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+/* Checkbox */
+.checkbox {
   display: flex;
   align-items: center;
   gap: 8px;
-  position: relative
+  cursor: pointer;
+  font-size: 13px;
+  color: var(--muted);
 }
 
-.select-with-info select {
-  min-width: 240px
+/* Buttons */
+button {
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 8px;
+  padding: 8px 12px;
+  color: var(--text);
+  background: transparent;
+  cursor: pointer;
+}
+
+button.primary {
+  background: linear-gradient(90deg, rgba(79,195,247,0.12), rgba(79,195,247,0.06));
+  border-color: rgba(79,195,247,0.18);
 }
 
 .info-btn {
-  width: 28px;
-  height: 28px;
+  width: 25px;
+  height: 25px;
   border-radius: 50%;
   border: 1px solid rgba(255, 255, 255, 0.08);
   background: rgba(255, 255, 255, 0.02);
@@ -92,172 +201,7 @@ h1#title {
 
 .info-btn:focus {
   outline: none;
-  box-shadow: 0 0 0 4px rgba(79, 195, 247, 0.06)
-}
-
-.row.two-up>.field {
-  width: 100%;
-}
-
-.field {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  /* ensure each field fills its grid cell */
-}
-
-/* Make fields positioning context for absolute children like tooltips */
-.field {
-  position: relative
-}
-
-.field.stretch {
-  flex: 1 1 auto;
-  width: 100%;
-}
-
-/* Ensure inputs and selects fill their container */
-input[type="text"],
-input[type="password"],
-input[type="number"],
-select {
-  width: 100%;
-  box-sizing: border-box;
-}
-
-/* Keep generated row layout: input stretches, actions aligned right */
-.row.generated {
-  display: flex;
-  gap: 12px;
-  /* align to bottom so buttons line up with the input field (not the label) */
-  align-items: flex-end;
-}
-
-.row.generated .actions {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-}
-
-/* Ensure the generated input and its buttons share a consistent height */
-.row.generated input#generated-output {
-  height: 40px;
-}
-
-.row.generated .actions button {
-  height: 40px;
-}
-
-/* Make the Generate button slightly more prominent and align right edge */
-.row.generated .actions button.primary {
-  padding: 8px 18px;
-}
-
-/* Responsive: stack columns on small screens */
-@media (max-width:540px) {
-  .row {
-    flex-direction: column;
-    align-items: stretch
-  }
-
-  .row.generated .actions {
-    justify-content: flex-end
-  }
-}
-
-.label {
-  font-size: 13px;
-  color: var(--muted);
-  margin-bottom: 6px;
-}
-
-/* Inputs and selects use a subtle solid background so the page radial light does not show through */
-input[type="text"],
-input[type="password"],
-input[type="number"],
-select {
-  background: rgba(0, 10, 24, 0.18);
-  /* slightly darker than page background */
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  color: var(--text);
-  padding: 10px 12px;
-  border-radius: 8px;
-  outline: none;
-  -webkit-appearance: none;
-  /* remove default arrow styling so we can control focus ring */
-  appearance: none;
-  background-repeat: no-repeat;
-  background-position: right 12px center;
-  box-sizing: border-box;
-  /* ensure padding is included in height */
-  height: 40px;
-  /* make these match the generated field height */
-}
-
-/* Provide a subtle custom arrow using an SVG data URI so appearance:none still shows an arrow */
-select {
-  padding-right: 36px;
-  /* room for custom arrow */
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%23e6f7ff' d='M6 8L0 0h12z'/%3E%3C/svg%3E");
-  border-radius: 8px;
-  outline: none;
-}
-
-/* Remove default browser expand arrow on IE/Edge while keeping our custom arrow */
-select::-ms-expand {
-  display: none;
-}
-
-/* On hover/focus keep rounded corners and use the same turquoise border/halo as other fields */
-select:hover,
-select:focus {
-  background-color: rgba(0, 10, 24, 0.22);
-  border-color: rgba(79, 195, 247, 0.6);
-  box-shadow: 0 0 0 4px rgba(79, 195, 247, 0.06);
-  border-radius: 8px;
-}
-
-/* Remove the ugly rectangular focus outline and keep rounded corners */
-input:focus,
-select:focus {
-  border-color: rgba(79, 195, 247, 0.6);
-  box-shadow: 0 0 0 4px rgba(79, 195, 247, 0.06);
-  border-radius: 8px;
-}
-
-/* Style native option backgrounds where supported */
-select option {
-  background: rgba(0, 6, 18, 0.95);
-  /* near-opaque so page light won't affect it */
-  color: var(--text);
-  padding: 6px 8px;
-}
-
-/* remove native spinner on number inputs */
-input[type="number"] {
-  -moz-appearance: textfield;
-  -webkit-appearance: none;
-  appearance: textfield;
-}
-
-input[type="number"]::-webkit-outer-spin-button,
-input[type="number"]::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
-}
-
-button {
-  background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  color: var(--text);
-  padding: 8px 12px;
-  border-radius: 8px;
-  cursor: pointer;
-}
-
-button.primary {
-  background: linear-gradient(90deg, rgba(79, 195, 247, 0.12), rgba(79, 195, 247, 0.06));
-  border-color: rgba(79, 195, 247, 0.18);
+  box-shadow: 0 0 0 2px rgba(var(--accent-rgb), 0.02);
 }
 
 #alphabet-tooltip {
@@ -277,48 +221,10 @@ button.primary {
   pointer-events: auto;
 }
 
-.alphabet-info-content b {
-  font-weight: 700;
-  margin-right: 4px;
-}
-
-.input-with-icon {
-  position: relative;
-}
-
-.input-with-icon input {
-  padding-right: 40px;
-}
-
-.inline-toggle {
-  position: absolute;
-  right: 8px;
-  top: 50%;
-  transform: translateY(-50%);
-  background: transparent;
-  border: none;
-  color: var(--muted);
-  padding: 6px;
-  border-radius: 6px;
-  cursor: pointer;
-}
-
-.inline-toggle:focus {
-  outline: none;
-  box-shadow: 0 0 0 4px rgba(79, 195, 247, 0.06);
-}
-
-/* Make sure the generated and field inputs use webkit password dots */
-input[type="password"] {
-  font-family: 'text-security-disc', 'Arial', sans-serif;
-}
-
-@media (max-width:420px) {
-  .center {
-    padding: 24px 16px
-  }
-
-  h1#title {
-    font-size: 24px
+/* Responsive */
+@media (max-width:540px) {
+  .row {
+    flex-direction: column;
+    align-items: stretch;
   }
 }

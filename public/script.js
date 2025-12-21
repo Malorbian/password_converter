@@ -1,5 +1,6 @@
 import { convertPassword, POLICIES, CHAR_CLASSES } from './js/converter.js';
 import { MaskedInputController } from './js/maskedInputController.js';
+import { UserSettingsController } from './js/userSettingsController.js';
 
 const passwordInput = document.getElementById('password-input');
 const passwordToggle = document.getElementById('password-toggle');
@@ -12,8 +13,19 @@ const alphabetInfo = document.getElementById('alphabet-info');
 const output = document.getElementById('generated-output');
 const outputToggle = document.getElementById('output-toggle');
 const generateBtn = document.getElementById('generate');
+const rememberSettingsCheckbox = document.getElementById('remember-settings');
+const deleteUserPreferencesBtn = document.getElementById('delete-user-settings');
 
-let alphabetHTMLInfo;
+let alphabetHTMLInfo = buildAlphabetInfoHtml();
+let userSettingsCtrl;
+
+
+// ----- User preferences handling -----
+userSettingsCtrl = new UserSettingsController(
+  [lengthInput, alphabetSelect],
+  rememberSettingsCheckbox,
+  deleteUserPreferencesBtn
+);
 
 
 // ----- Alphabet tooltip handling -----
@@ -33,13 +45,10 @@ function buildAlphabetInfoHtml() {
     return `<b>${it.name}:</b> ${chars.replace(/ /g, '·')}<br>`;
   });
 
-  return `<div class="alphabet-info-content">${lines.join('<br>')}</div>`;
+  return `<div class="alphabet-tooltip">${lines.join('<br>')}</div>`;
 }
 
 function openAlphabetInfo() {
-  if (!alphabetHTMLInfo) {
-    alphabetHTMLInfo = buildAlphabetInfoHtml();
-  }
   tooltip.innerHTML = alphabetHTMLInfo;
   tooltip.style.display = 'block';
   tooltip.setAttribute('aria-hidden', 'false');
@@ -70,9 +79,6 @@ document.addEventListener('click', (e) => {
   if (!wrapper) return;
   if (!wrapper.contains(e.target)) closeAlphabetInfo();
 });
-
-
-
 
 
 // ----- Input fields handling -----
