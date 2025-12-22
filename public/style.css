@@ -38,6 +38,13 @@ h1#title {
   font-size: 32px;
 }
 
+#footnote {
+  text-align: center;
+  font-size: 13px;
+  color: var(--muted);
+  margin-top: 24px;
+}
+
 .card {
   background: var(--card);
   padding: 24px;
