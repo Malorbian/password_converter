@@ -42,7 +42,7 @@ function buildAlphabetInfoHtml() {
     const chars = (policy?.alphabet || [])
       .map(c => CHAR_CLASSES[c])
       .join('');
-    return `<b>${it.name}:</b> ${chars.replace(/ /g, '·')}<br>`;
+    return `<b>${it.name}:</b><br>"${chars.replace(/ /g, '·')}"<br>`;
   });
 
   return `<div class="alphabet-tooltip">${lines.join('<br>')}</div>`;
